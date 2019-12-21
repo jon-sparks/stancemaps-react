@@ -22,6 +22,10 @@ class App extends React.Component {
 
         }
 
+        fetch('/ping')
+            .then(response => response.json())
+            .then(data => console.log(data))
+
 
     }
 
