@@ -41,6 +41,9 @@ class Map extends React.Component {
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(function(position) {
                 thisComponent.updateLoc(position)
+                console.log(thisComponent)
+                let currentPosMarker = new window.H.map.Marker({lat:position.coords.latitude, lng:position.coords.longitude});
+                thisComponent.map.addObject(currentPosMarker);
             });
         } else {
           /* geolocation IS NOT available */
@@ -51,6 +54,8 @@ class Map extends React.Component {
 
         var layer = this.platform.createDefaultLayers();
         var container = document.getElementById('here-map');
+
+        
 
         this.map = new window.H.Map(container, layer.vector.normal.map,
             {
