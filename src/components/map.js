@@ -70,6 +70,51 @@ class Map extends React.Component {
         var ui = new window.H.ui.UI.createDefault(this.map, layer)
 
         // window.H.Map.Options({lat:-15.829251, lng:-56.099042})
+        console.log(window.H.map)
+
+        this.map.addEventListener('longpress', function(ev) {
+            let newCoords = ev.target.screenToGeo(ev.currentPointer.viewportX, ev.currentPointer.viewportY)
+            let newSpeedbump = new window.H.map.Marker({lat:newCoords.lat, lng:newCoords.lng});
+            newSpeedbump.draggable = true
+            thisComponent.map.addObject(newSpeedbump);
+        });
+
+        // disable the default draggability of the underlying map
+        // and calculate the offset between mouse and target's position
+        // when starting to drag a marker object:
+        this.map.addEventListener('dragstart', function(ev) {
+            var target = ev.target,
+                pointer = ev.currentPointer;
+            if (target instanceof window.H.map.Marker) {
+
+                console.log(this)
+                var targetPosition = this.geoToScreen(target.getGeometry());
+                console.log(targetPosition)
+                target['offset'] = new window.H.math.Point(pointer.viewportX - targetPosition.x, pointer.viewportY - targetPosition.y);
+                behavior.disable();
+            }
+        }, false);
+
+
+        // re-enable the default draggability of the underlying map
+        // when dragging has completed
+        this.map.addEventListener('dragend', function(ev) {
+            var target = ev.target;
+            if (target instanceof window.H.map.Marker) {
+            behavior.enable();
+            }
+        }, false);
+
+        // Listen to the drag event and move the position of the marker
+        // as necessary
+        this.map.addEventListener('drag', function(ev) {
+            var target = ev.target,
+                pointer = ev.currentPointer;
+            if (target instanceof window.H.map.Marker) {
+            target.setGeometry(this.screenToGeo(pointer.viewportX - target['offset'].x, pointer.viewportY - target['offset'].y));
+            }
+        }, false);
+        
 
 
     }
