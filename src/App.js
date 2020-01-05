@@ -20,11 +20,17 @@ class App extends React.Component {
 
         this.state = {
 
+            allBumps: {}
+
         }
 
-        fetch('/ping')
+        fetch('/bumps')
             .then(response => response.json())
-            .then(data => console.log(data))
+            .then(data => {
+                this.setState({
+                    allBumps: data
+                })
+            })
 
 
     }
@@ -38,6 +44,7 @@ class App extends React.Component {
                     lat="42.345978"
                     lng="-83.0405"
                     zoom="12"
+                    allBumps={this.state.allBumps}
                 />
             </div>
         );

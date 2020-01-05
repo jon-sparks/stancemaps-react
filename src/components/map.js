@@ -1,4 +1,5 @@
 import React from 'react';
+import bumpIcon from '../bumpicon.png';
 
 // eslint-disable-next-line
 const e = React.createElement;
@@ -17,7 +18,8 @@ class Map extends React.Component {
                 lat: 51.481583,
                 lng: -3.179090,
             },
-            zoom: 10
+            zoom: 10,
+            allBumps: this.props.allBumps
         }
     }
 
@@ -41,7 +43,7 @@ class Map extends React.Component {
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(function(position) {
                 thisComponent.updateLoc(position)
-                console.log(thisComponent)
+                // console.log(thisComponent)
                 let currentPosMarker = new window.H.map.Marker({lat:position.coords.latitude, lng:position.coords.longitude});
                 thisComponent.map.addObject(currentPosMarker);
             });
@@ -70,7 +72,7 @@ class Map extends React.Component {
         var ui = new window.H.ui.UI.createDefault(this.map, layer)
 
         // window.H.Map.Options({lat:-15.829251, lng:-56.099042})
-        console.log(window.H.map)
+        // console.log(window.H.map)
 
         this.map.addEventListener('longpress', function(ev) {
             let newCoords = ev.target.screenToGeo(ev.currentPointer.viewportX, ev.currentPointer.viewportY)
@@ -87,9 +89,9 @@ class Map extends React.Component {
                 pointer = ev.currentPointer;
             if (target instanceof window.H.map.Marker) {
 
-                console.log(this)
+                // console.log(this)
                 var targetPosition = this.geoToScreen(target.getGeometry());
-                console.log(targetPosition)
+                // console.log(targetPosition)
                 target['offset'] = new window.H.math.Point(pointer.viewportX - targetPosition.x, pointer.viewportY - targetPosition.y);
                 behavior.disable();
             }
@@ -114,12 +116,31 @@ class Map extends React.Component {
             target.setGeometry(this.screenToGeo(pointer.viewportX - target['offset'].x, pointer.viewportY - target['offset'].y));
             }
         }, false);
-        
+
+
+            
+    }
+
+    //update allBumps state when props are updated.
+    static getDerivedStateFromProps(nextProps, prevState){
+        return({allBumps: nextProps.allBumps})
+    }
+
+    componentDidUpdate(){
+
+        // Define the icon image for speed bumps
+        // let bumpIcon = new window.H.map.Icon("../bumpicon.png", {anchor: {x:15,y:15}});
+        // console.log(bumpIcon)
+
+        if(this.state.allBumps.length > 0){
+            Object.values(this.state.allBumps).forEach(value => {
+                let bumpMarker = new window.H.map.Marker({lat:value.lat, lng:value.lon});
+                this.map.addObject(bumpMarker);
+            });
+        }
 
 
     }
-
-
 
     render() {
         return (
