@@ -1,5 +1,6 @@
 import React from 'react';
 import Map from './components/map';
+import Sidebar from './components/sidebar';
 import styled from 'styled-components';
 
 const Input = styled.input`
@@ -13,6 +14,7 @@ const Input = styled.input`
     font-size: 16px;
     z-index: 1;
 `;
+
 
 class App extends React.Component {
     constructor(props) {
@@ -37,7 +39,8 @@ class App extends React.Component {
 
     render() {
         return (
-            <div className="App">
+            <div className="App" style={{display:'flex'}}>
+                <Sidebar/>
                 <Input/>
                 <Map
                     apikey="HnSYQXJYOLQAGFkthNCjSYdKzEjwrfxthpOqhcL5gSQ"

@@ -144,7 +144,7 @@ class Map extends React.Component {
 
     render() {
         return (
-            <div id="here-map" style={{width: '100%', height: '100vh', background: 'grey' }}></div>
+            <div id="here-map" style={{height: '100vh', background: 'grey', flexGrow: 1}}></div>
         );
     }
 }
