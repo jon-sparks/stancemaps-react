@@ -1,19 +1,8 @@
 import React from 'react';
 import Map from './components/map';
 import Sidebar from './components/sidebar';
-import styled from 'styled-components';
 
-const Input = styled.input`
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    box-shadow: 0 0 10px 0 rgba(0,0,0,0.4);
-    background: white;
-    border: none;
-    padding: 15px;
-    font-size: 16px;
-    z-index: 1;
-`;
+
 
 
 class App extends React.Component {
@@ -41,7 +30,6 @@ class App extends React.Component {
         return (
             <div className="App" style={{display:'flex'}}>
                 <Sidebar/>
-                <Input/>
                 <Map
                     apikey="HnSYQXJYOLQAGFkthNCjSYdKzEjwrfxthpOqhcL5gSQ"
                     lat="42.345978"
