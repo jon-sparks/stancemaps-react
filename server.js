@@ -6,7 +6,7 @@ const db = require('./queries')
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
-  extrended: true,
+  extended: true,
 }))
 app.use(express.static(path.join(__dirname, 'build')));
 
