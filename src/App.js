@@ -1,9 +1,5 @@
 import React from 'react';
 import Map from './components/map';
-import Sidebar from './components/sidebar';
-
-
-
 
 class App extends React.Component {
     constructor(props) {
@@ -29,7 +25,6 @@ class App extends React.Component {
     render() {
         return (
             <div className="App" style={{display:'flex'}}>
-                <Sidebar/>
                 <Map
                     apikey="HnSYQXJYOLQAGFkthNCjSYdKzEjwrfxthpOqhcL5gSQ"
                     lat="42.345978"

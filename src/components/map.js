@@ -1,8 +1,28 @@
 import React from 'react';
 import bumpIcon from '../bumpicon.png';
+import styled from 'styled-components';
 
 // eslint-disable-next-line
 const e = React.createElement;
+
+const Side = styled.div`
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 400px;
+    background: white;
+    boxShadow: 5px 0px 20px -10px rgba(0,0,0,0.3);
+    padding: 25px;
+    z-index: 1;
+`;
+const Input = styled.input`
+    box-shadow: inset 0 -2px 0 0 magenta;
+    background: white;
+    border: none;
+    padding: 15px;
+    font-size: 16px;
+    z-index: 1;
+`;
 
 class Map extends React.Component {
 
@@ -19,7 +39,9 @@ class Map extends React.Component {
                 lng: -3.179090,
             },
             zoom: 10,
-            allBumps: this.props.allBumps
+            allBumps: this.props.allBumps,
+            from: '',
+            to: ''
         }
     }
 
@@ -34,6 +56,18 @@ class Map extends React.Component {
             lat: this.state.center.lat,
             lng: this.state.center.lng
         })
+    }
+
+    createRoute = () => {
+
+        fetch(`https://route.ls.hereapi.com/routing/7.2/calculateroute.json?apiKey=${this.state.apikey}&waypoint0=geo!52.5,13.4&waypoint1=geo!52.5,13.45&mode=fastest;car;traffic:disabled`)
+        .then((response) => {
+            return response.json();
+        })
+        .then((myJson) => {
+            console.log(myJson);
+        });
+
     }
 
     componentDidMount() {
@@ -116,9 +150,7 @@ class Map extends React.Component {
             target.setGeometry(this.screenToGeo(pointer.viewportX - target['offset'].x, pointer.viewportY - target['offset'].y));
             }
         }, false);
-
-
-            
+                
     }
 
     //update allBumps state when props are updated.
@@ -144,7 +176,23 @@ class Map extends React.Component {
 
     render() {
         return (
-            <div id="here-map" style={{height: '100vh', background: 'grey', flexGrow: 1}}></div>
+            <>
+                <Side>
+                    <Input placeholder="From" onChange={(e) => {
+                        this.setState({
+                            from:e.currentTarget.value
+                        })
+                    } }/>
+                    <Input placeholder="To" onChange={(e) => {
+                        this.setState({
+                            to:e.currentTarget.value
+                        })
+                    } }/>
+                    <button onClick={this.createRoute}>Go</button>
+                </Side>
+                <div id="here-map" style={{height: '100vh', background: 'grey', flexGrow: 1}}></div>
+            </>
+            
         );
     }
 }
