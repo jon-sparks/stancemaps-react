@@ -60,12 +60,41 @@ class Map extends React.Component {
 
     createRoute = () => {
 
-        fetch(`https://route.ls.hereapi.com/routing/7.2/calculateroute.json?apiKey=${this.state.apikey}&waypoint0=geo!52.5,13.4&waypoint1=geo!52.5,13.45&mode=fastest;car;traffic:disabled`)
+        fetch(`https://route.ls.hereapi.com/routing/7.2/calculateroute.json?apiKey=${this.state.apikey}&waypoint0=geo!51.4,-3.17&waypoint1=geo!51.5,-3.58&mode=fastest;car;traffic:disabled`)
         .then((response) => {
             return response.json();
         })
         .then((myJson) => {
-            console.log(myJson);
+            console.log(myJson.response);
+
+
+            var route,
+                routeShape,
+                startPoint,
+                endPoint,
+                linestring;
+            if(myJson.response.route) {
+                // Pick the first route from the response:
+                route = myJson.response.route[0];
+                // Pick the route's shape:
+                routeShape = route.shape;
+
+                linestring = new window.H.geo.LineString();
+                
+                routeShape.forEach(function(point) {
+                    var parts = point.split(',');
+                    linestring.pushLatLngAlt(parts[0], parts[1]);
+                });
+
+                startPoint = route.waypoint[0].mappedPosition;
+                endPoint = route.waypoint[1].mappedPosition;
+
+                var routeLine = new window.H.map.Polyline(linestring, {
+                    style: { strokeColor: 'blue', lineWidth: 3 }
+                });
+            }
+
+
         });
 
     }
