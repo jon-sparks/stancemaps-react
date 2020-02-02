@@ -40,8 +40,10 @@ class Map extends React.Component {
             },
             zoom: 10,
             allBumps: this.props.allBumps,
+            currentLoc: '',
             from: '',
-            to: ''
+            to: '',
+            suggested: [],
         }
     }
 
@@ -60,7 +62,7 @@ class Map extends React.Component {
 
     createRoute = () => {
 
-        fetch(`https://route.ls.hereapi.com/routing/7.2/calculateroute.json?apiKey=${this.state.apikey}&waypoint0=geo!51.4,-3.17&waypoint1=geo!51.5,-3.58&mode=fastest;car;traffic:disabled`)
+        fetch(`https://route.ls.hereapi.com/routing/7.2/calculateroute.json?apiKey=${this.state.apikey}&waypoint0=geo!51.4,-3.17&waypoint1=geo!51.5,-3.58&mode=fastest;car;traffic:disabled&routeAttributes=sh`)
         .then((response) => {
             return response.json();
         })
@@ -90,7 +92,14 @@ class Map extends React.Component {
                 endPoint = route.waypoint[1].mappedPosition;
 
                 var routeLine = new window.H.map.Polyline(linestring, {
-                    style: { strokeColor: 'blue', lineWidth: 3 }
+                    style: { strokeColor: 'blue', lineWidth: 4 }
+                });
+
+                // Add the polyline to the map
+                this.map.addObject(routeLine);
+                // And zoom to its bounding rectangle
+                this.map.getViewModel().setLookAtData({
+                    bounds: routeLine.getBoundingBox()
                 });
             }
 
@@ -106,6 +115,9 @@ class Map extends React.Component {
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(function(position) {
                 thisComponent.updateLoc(position)
+                thisComponent.setState({
+                    currentLoc: position.coords
+                })
                 // console.log(thisComponent)
                 let currentPosMarker = new window.H.map.Marker({lat:position.coords.latitude, lng:position.coords.longitude});
                 thisComponent.map.addObject(currentPosMarker);
@@ -204,20 +216,46 @@ class Map extends React.Component {
     }
 
     render() {
+
+        const suggestionList = this.state.suggested.map((suggestion, index) => <li key={ index }>{suggestion.title}</li>)
+
         return (
             <>
                 <Side>
                     <Input placeholder="From" onChange={(e) => {
+                        fetch(`https://places.sit.ls.hereapi.com/places/v1/autosuggest?app_id=xm8gUL0xdsrDwtVYGJL4&app_code=clYtcwwAK6n0giMRsN3OeQ&at=${this.state.currentLoc.latitude},${this.state.currentLoc.longitude}&q=${this.state.from}&pretty&size=5`)
+                        .then((response) => {
+                            return response.json();
+                        })
+                        .then((suggestions) => {
+                            this.setState({
+                                suggested: suggestions.results
+                            })
+                        })
                         this.setState({
                             from:e.currentTarget.value
                         })
                     } }/>
                     <Input placeholder="To" onChange={(e) => {
+                        fetch(`https://places.sit.ls.hereapi.com/places/v1/autosuggest?app_id=xm8gUL0xdsrDwtVYGJL4&app_code=clYtcwwAK6n0giMRsN3OeQ&at=${this.state.currentLoc.latitude},${this.state.currentLoc.longitude}&q=${this.state.to}&pretty&size=5`)
+                        .then((response) => {
+                            return response.json();
+                        })
+                        .then((suggestions) => {
+                            this.setState({
+                                suggested: suggestions.results
+                            })
+                        })
                         this.setState({
                             to:e.currentTarget.value
                         })
                     } }/>
                     <button onClick={this.createRoute}>Go</button>
+                    <div>
+                        <ul>
+                            {suggestionList}
+                        </ul>
+                    </div>
                 </Side>
                 <div id="here-map" style={{height: '100vh', background: 'grey', flexGrow: 1}}></div>
             </>
