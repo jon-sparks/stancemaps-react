@@ -23,6 +23,16 @@ const Input = styled.input`
     font-size: 16px;
     z-index: 1;
 `;
+const Suggestion = styled.li`
+    h3 {
+        margin-bottom: 5px;
+    }
+    p {
+        margin: 0px;
+        font-size: 12px;
+        color: grey;
+    }
+`
 
 class Map extends React.Component {
 
@@ -106,6 +116,18 @@ class Map extends React.Component {
 
         });
 
+    }
+
+    updateSuggested = (direction) => {
+        fetch(`https://places.sit.ls.hereapi.com/places/v1/autosuggest?app_id=xm8gUL0xdsrDwtVYGJL4&app_code=clYtcwwAK6n0giMRsN3OeQ&at=${this.state.currentLoc.latitude},${this.state.currentLoc.longitude}&q=${direction}&pretty&size=5`)
+        .then((response) => {
+            return response.json();
+        })
+        .then((suggestions) => {
+            this.setState({
+                suggested: suggestions.results
+            })
+        })
     }
 
     componentDidMount() {
@@ -217,35 +239,24 @@ class Map extends React.Component {
 
     render() {
 
-        const suggestionList = this.state.suggested.map((suggestion, index) => <li key={ index }>{suggestion.title}</li>)
+        const suggestionList = this.state.suggested.map((suggestion, index) => {
+            return <Suggestion key={index}>
+                <h3>{suggestion.title}</h3>
+                <p>{suggestion.categoryTitle}</p>
+                </Suggestion>
+        })
 
         return (
             <>
                 <Side>
                     <Input placeholder="From" onChange={(e) => {
-                        fetch(`https://places.sit.ls.hereapi.com/places/v1/autosuggest?app_id=xm8gUL0xdsrDwtVYGJL4&app_code=clYtcwwAK6n0giMRsN3OeQ&at=${this.state.currentLoc.latitude},${this.state.currentLoc.longitude}&q=${this.state.from}&pretty&size=5`)
-                        .then((response) => {
-                            return response.json();
-                        })
-                        .then((suggestions) => {
-                            this.setState({
-                                suggested: suggestions.results
-                            })
-                        })
+                        this.updateSuggested(this.state.from)
                         this.setState({
                             from:e.currentTarget.value
                         })
                     } }/>
                     <Input placeholder="To" onChange={(e) => {
-                        fetch(`https://places.sit.ls.hereapi.com/places/v1/autosuggest?app_id=xm8gUL0xdsrDwtVYGJL4&app_code=clYtcwwAK6n0giMRsN3OeQ&at=${this.state.currentLoc.latitude},${this.state.currentLoc.longitude}&q=${this.state.to}&pretty&size=5`)
-                        .then((response) => {
-                            return response.json();
-                        })
-                        .then((suggestions) => {
-                            this.setState({
-                                suggested: suggestions.results
-                            })
-                        })
+                        this.updateSuggested(this.state.to)
                         this.setState({
                             to:e.currentTarget.value
                         })
