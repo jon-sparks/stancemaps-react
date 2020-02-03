@@ -124,6 +124,7 @@ class Map extends React.Component {
             return response.json();
         })
         .then((suggestions) => {
+            console.log(suggestions)
             this.setState({
                 suggested: suggestions.results
             })
@@ -240,9 +241,15 @@ class Map extends React.Component {
     render() {
 
         const suggestionList = this.state.suggested.map((suggestion, index) => {
+            
             return <Suggestion key={index}>
-                <h3>{suggestion.title}</h3>
-                <p>{suggestion.categoryTitle}</p>
+                <p dangerouslySetInnerHTML={{
+                    __html: suggestion.highlightedTitle
+                }} />
+                <p dangerouslySetInnerHTML={{
+                    __html: suggestion.vicinity
+                }} />
+
                 </Suggestion>
         })
 
@@ -250,16 +257,16 @@ class Map extends React.Component {
             <>
                 <Side>
                     <Input placeholder="From" onChange={(e) => {
-                        this.updateSuggested(this.state.from)
                         this.setState({
                             from:e.currentTarget.value
                         })
+                        this.updateSuggested(this.state.from)
                     } }/>
                     <Input placeholder="To" onChange={(e) => {
-                        this.updateSuggested(this.state.to)
                         this.setState({
                             to:e.currentTarget.value
                         })
+                        this.updateSuggested(this.state.to)
                     } }/>
                     <button onClick={this.createRoute}>Go</button>
                     <div>
