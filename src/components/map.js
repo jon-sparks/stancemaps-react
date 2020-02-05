@@ -10,28 +10,47 @@ const Side = styled.div`
     flex-direction: column;
     height: 100vh;
     width: 400px;
-    background: white;
+    background: #fafafa;
     boxShadow: 5px 0px 20px -10px rgba(0,0,0,0.3);
     padding: 25px;
     z-index: 1;
 `;
 const Input = styled.input`
     box-shadow: inset 0 -2px 0 0 magenta;
-    background: white;
+    background: none;
     border: none;
     padding: 15px;
     font-size: 16px;
     z-index: 1;
 `;
 const Suggestion = styled.li`
-    h3 {
-        margin-bottom: 5px;
+    padding: 7px 12px;
+
+    &:hover {
+        background: deepskyblue;
+        
+        p {
+            color: white;
+        }
     }
-    p {
-        margin: 0px;
-        font-size: 12px;
-        color: grey;
-    }
+
+        h3 {
+            margin-bottom: 5px;
+        }
+        p {
+            margin: 0px;
+            font-size: 14px;
+            color: grey;
+        }
+`;
+const Suggestions = styled.ul`
+    background: white;
+    box-shadow: 0 5px 20px -10px rgba(0,0,0,0.3);
+    list-style: none;
+    border-radius: 5px;
+    overflow: hidden;
+    padding: 0;
+    transition: all ease 0.3s;
 `
 
 class Map extends React.Component {
@@ -54,6 +73,7 @@ class Map extends React.Component {
             from: '',
             to: '',
             suggested: [],
+            selectedInput : ''
         }
     }
 
@@ -256,23 +276,24 @@ class Map extends React.Component {
         return (
             <>
                 <Side>
-                    <Input placeholder="From" onChange={(e) => {
+                    <Input id="from" placeholder="From" onKeyUp={(e) => {
+                        console.log(e.currentTarget.id)
                         this.setState({
-                            from:e.currentTarget.value
-                        })
-                        this.updateSuggested(this.state.from)
+                            from:e.currentTarget.value,
+                            selectedInput:e.currentTarget.id
+                        }, () => this.updateSuggested(this.state.from))
                     } }/>
-                    <Input placeholder="To" onChange={(e) => {
+                    <Input id="to" placeholder="To" onKeyUp={(e) => {
                         this.setState({
-                            to:e.currentTarget.value
-                        })
-                        this.updateSuggested(this.state.to)
+                            to:e.currentTarget.value,
+                            selectedInput:e.currentTarget.id
+                        }, () => this.updateSuggested(this.state.to))
                     } }/>
                     <button onClick={this.createRoute}>Go</button>
                     <div>
-                        <ul>
+                        <Suggestions>
                             {suggestionList}
-                        </ul>
+                        </Suggestions>
                     </div>
                 </Side>
                 <div id="here-map" style={{height: '100vh', background: 'grey', flexGrow: 1}}></div>
