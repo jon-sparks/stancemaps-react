@@ -71,9 +71,12 @@ class Map extends React.Component {
             allBumps: this.props.allBumps,
             currentLoc: '',
             from: '',
+            fromLoc: '',
             to: '',
+            toLoc: '',
             suggested: [],
-            selectedInput : ''
+            selectedInput : '',
+            comment: ''
         }
     }
 
@@ -258,11 +261,32 @@ class Map extends React.Component {
 
     }
 
+    handleChange(e) {
+        this.setState({ comment: e.target.value });
+    }
+
     render() {
 
         const suggestionList = this.state.suggested.map((suggestion, index) => {
             
-            return <Suggestion key={index}>
+            return <Suggestion key={index} data-loc={(suggestion.position) ? `${suggestion.position[0]},${suggestion.position[1]}` : ''} onClick={(e) => {
+                
+                this.setState({
+                    comment:e.currentTarget.dataset.loc
+                })
+
+
+                if(this.state.selectedInput === 'from'){
+                    this.setState({
+                        fromLoc: e.currentTarget.dataset.loc
+                    })
+                } else {
+                    this.setState({
+                        toLoc: e.currentTarget.dataset.loc
+                    })
+                }
+
+                }}>
                 <p dangerouslySetInnerHTML={{
                     __html: suggestion.highlightedTitle
                 }} />
@@ -276,7 +300,10 @@ class Map extends React.Component {
         return (
             <>
                 <Side>
-                    <Input id="from" placeholder="From" onKeyUp={(e) => {
+
+                    <input type="text" value={this.state.comment} onChange={this.handleChange.bind(this)}></input>
+
+                    <Input id="from" placeholder="From" value={this.state.from} onKeyUp={(e) => {
                         console.log(e.currentTarget.id)
                         this.setState({
                             from:e.currentTarget.value,
