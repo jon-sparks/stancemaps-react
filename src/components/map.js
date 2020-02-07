@@ -81,7 +81,8 @@ class Map extends React.Component {
             to: '',
             toLoc: '',
             suggested: [],
-            selectedInput : ''
+            selectedInput : '',
+            userInput: ''
         }
     }
 
@@ -100,7 +101,7 @@ class Map extends React.Component {
 
     createRoute = () => {
 
-        fetch(`https://route.ls.hereapi.com/routing/7.2/calculateroute.json?apiKey=${this.state.apikey}&waypoint0=geo!51.4,-3.17&waypoint1=geo!51.5,-3.58&mode=fastest;car;traffic:disabled&routeAttributes=sh`)
+        fetch(`https://route.ls.hereapi.com/routing/7.2/calculateroute.json?apiKey=${this.state.apikey}&waypoint0=geo!${this.state.fromLoc}&waypoint1=geo!${this.state.toLoc}8&mode=fastest;car;traffic:disabled&routeAttributes=sh`)
         .then((response) => {
             return response.json();
         })
@@ -144,6 +145,12 @@ class Map extends React.Component {
 
         });
 
+    }
+
+    updateInput = () => {
+        this.setState({
+            userInput: ''
+        })
     }
 
     updateSuggested = (direction) => {
@@ -276,18 +283,31 @@ class Map extends React.Component {
             
             return <Suggestion key={index} data-title={(suggestion.title) ? suggestion.title : ''} data-loc={(suggestion.position) ? `${suggestion.position[0]},${suggestion.position[1]}` : ''} onClick={(e) => {
                 
-
-                if(this.state.selectedInput === 'from'){
-                    this.setState({
-                        fromLoc: e.currentTarget.dataset.loc
-                    })
-                } else {
-                    this.setState({
-                        toLoc: e.currentTarget.dataset.loc
-                    })
-                }
+                    if(this.state.selectedInput === 'from'){
+                        this.setState({
+                            fromLoc: e.currentTarget.dataset.loc,
+                            userInput: e.currentTarget.dataset.title
+                        }, () => {
+                            document.querySelector('#from').value = this.state.userInput
+                            this.setState({
+                                suggested: []
+                            })
+                        })
+                        
+                    } else {
+                        this.setState({
+                            toLoc: e.currentTarget.dataset.loc,
+                            userInput: e.currentTarget.dataset.title
+                        }, () => {
+                            document.querySelector('#to').value = this.state.userInput
+                            this.setState({
+                                suggested: []
+                            })
+                        })
+                    }
 
                 }}>
+
                 <Location dangerouslySetInnerHTML={{
                     __html: suggestion.highlightedTitle
                 }} />
@@ -305,7 +325,7 @@ class Map extends React.Component {
             <>
                 <Side>
 
-                    <Input id="from" placeholder="From" value={this.state.from} onKeyUp={(e) => {
+                    <Input id="from" placeholder="From" onKeyUp={(e) => {
                         console.log(e.currentTarget.id)
                         this.setState({
                             from:e.currentTarget.value,
