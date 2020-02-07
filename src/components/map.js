@@ -37,12 +37,12 @@ const Suggestion = styled.li`
         h3 {
             margin-bottom: 5px;
         }
-        p {
-            margin: 0px;
-            font-size: 14px;
-            color: grey;
-        }
 `;
+const Location = styled.p`
+    margin: 0px;
+    font-size: 14px;
+    color: grey;
+`
 const Suggestions = styled.ul`
     background: white;
     box-shadow: 0 5px 20px -10px rgba(0,0,0,0.3);
@@ -51,6 +51,12 @@ const Suggestions = styled.ul`
     overflow: hidden;
     padding: 0;
     transition: all ease 0.3s;
+`
+const Distance = styled.p`
+    font-size: 12px;
+    color: magenta;
+    margin: 3px 0 6px 0;
+    font-weight: bold;
 `
 
 class Map extends React.Component {
@@ -75,8 +81,7 @@ class Map extends React.Component {
             to: '',
             toLoc: '',
             suggested: [],
-            selectedInput : '',
-            comment: ''
+            selectedInput : ''
         }
     }
 
@@ -261,20 +266,16 @@ class Map extends React.Component {
 
     }
 
-    handleChange(e) {
-        this.setState({ comment: e.target.value });
-    }
-
     render() {
+
+        const getMiles = (distance) => {
+            return distance/1609
+        }
 
         const suggestionList = this.state.suggested.map((suggestion, index) => {
             
-            return <Suggestion key={index} data-loc={(suggestion.position) ? `${suggestion.position[0]},${suggestion.position[1]}` : ''} onClick={(e) => {
+            return <Suggestion key={index} data-title={(suggestion.title) ? suggestion.title : ''} data-loc={(suggestion.position) ? `${suggestion.position[0]},${suggestion.position[1]}` : ''} onClick={(e) => {
                 
-                this.setState({
-                    comment:e.currentTarget.dataset.loc
-                })
-
 
                 if(this.state.selectedInput === 'from'){
                     this.setState({
@@ -287,11 +288,14 @@ class Map extends React.Component {
                 }
 
                 }}>
-                <p dangerouslySetInnerHTML={{
+                <Location dangerouslySetInnerHTML={{
                     __html: suggestion.highlightedTitle
                 }} />
-                <p dangerouslySetInnerHTML={{
+                <Location dangerouslySetInnerHTML={{
                     __html: suggestion.vicinity
+                }} />
+                <Distance dangerouslySetInnerHTML={{
+                    __html: (suggestion.distance) ? `${getMiles(suggestion.distance).toFixed(1)} Miles` : ''
                 }} />
 
                 </Suggestion>
@@ -300,8 +304,6 @@ class Map extends React.Component {
         return (
             <>
                 <Side>
-
-                    <input type="text" value={this.state.comment} onChange={this.handleChange.bind(this)}></input>
 
                     <Input id="from" placeholder="From" value={this.state.from} onKeyUp={(e) => {
                         console.log(e.currentTarget.id)
