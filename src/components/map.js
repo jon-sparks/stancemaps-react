@@ -16,18 +16,40 @@ const Side = styled.div`
     z-index: 1;
 `;
 const Input = styled.input`
-    box-shadow: inset 0 -2px 0 0 magenta;
-    background: none;
+    box-shadow: 0 5px 20px -10px rgba(0,0,0,0.3);
+    background: white;
+    border: none;
+    padding: 15px;
+    font-size: 16px;
+    margin-bottom: 25px;
+    z-index: 1;
+    border-radius: 6px;
+`;
+const Button = styled.button`
+    position: relative;
+    background: linear-gradient(131deg, rgba(190,238,255,1) 0%, rgba(70,207,255,1) 100%);
     border: none;
     padding: 15px;
     font-size: 16px;
     z-index: 1;
+    border-radius: 6px;
+    font-weight: bold;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    transition: box-shadow ease 0.4s;
+    overflow: hidden;
+
+    &:hover {
+        box-shadow: 0 5px 20px -10px rgba(0,0,0,0.3);
+    }
 `;
 const Suggestion = styled.li`
     padding: 7px 12px;
+    cursor: pointer;
 
     &:hover {
-        background: deepskyblue;
+        background: #46CFFF;
         
         p {
             color: white;
@@ -50,11 +72,10 @@ const Suggestions = styled.ul`
     border-radius: 5px;
     overflow: hidden;
     padding: 0;
-    transition: all ease 0.3s;
 `
 const Distance = styled.p`
     font-size: 12px;
-    color: magenta;
+    color: #46CFFF;
     margin: 3px 0 6px 0;
     font-weight: bold;
 `
@@ -66,6 +87,7 @@ class Map extends React.Component {
 
         this.platform = null;
         this.map = null;
+        this.routeGroup = null;
 
         this.state = {
             apikey: this.props.apikey,
@@ -91,7 +113,8 @@ class Map extends React.Component {
             center: {
                 lat: a.coords.latitude,
                 lng: a.coords.longitude
-            }
+            },
+            fromLoc: a.coords.latitude + ',' + a.coords.longitude
         })
         this.map.setCenter({
             lat: this.state.center.lat,
@@ -99,14 +122,14 @@ class Map extends React.Component {
         })
     }
 
-    createRoute = () => {
+    createRoute = () => {   
 
         fetch(`https://route.ls.hereapi.com/routing/7.2/calculateroute.json?apiKey=${this.state.apikey}&waypoint0=geo!${this.state.fromLoc}&waypoint1=geo!${this.state.toLoc}8&mode=fastest;car;traffic:disabled&routeAttributes=sh`)
         .then((response) => {
             return response.json();
         })
         .then((myJson) => {
-            console.log(myJson.response);
+            // console.log(myJson.response);
 
 
             var route,
@@ -130,16 +153,32 @@ class Map extends React.Component {
                 startPoint = route.waypoint[0].mappedPosition;
                 endPoint = route.waypoint[1].mappedPosition;
 
-                var routeLine = new window.H.map.Polyline(linestring, {
-                    style: { strokeColor: 'blue', lineWidth: 4 }
+                // Create a marker for the start point:
+                var startMarker = new window.H.map.Marker({
+                    lat: startPoint.latitude,
+                    lng: startPoint.longitude
                 });
 
-                // Add the polyline to the map
-                this.map.addObject(routeLine);
-                // And zoom to its bounding rectangle
-                this.map.getViewModel().setLookAtData({
-                    bounds: routeLine.getBoundingBox()
+                // Create a marker for the end point:
+                var endMarker = new window.H.map.Marker({
+                    lat: endPoint.latitude,
+                    lng: endPoint.longitude
                 });
+
+                //Remove previous routes
+                this.routeGroup.removeAll()
+
+                //Create group containing route markers and route line
+                this.routeGroup.addObjects([new window.H.map.Polyline(linestring, { style: { strokeColor: '#46CFFF', lineWidth: 6 } }), startMarker, endMarker ])
+
+                //Add the group to the map
+                this.map.addObject(this.routeGroup)
+
+                //Move the map to show the route. Don't know how to animate yet
+                this.map.getViewModel().setLookAtData({
+                    bounds: this.routeGroup.getBoundingBox()
+                });
+
             }
 
 
@@ -154,7 +193,8 @@ class Map extends React.Component {
     }
 
     updateSuggested = (direction) => {
-        fetch(`https://places.sit.ls.hereapi.com/places/v1/autosuggest?app_id=xm8gUL0xdsrDwtVYGJL4&app_code=clYtcwwAK6n0giMRsN3OeQ&at=${this.state.currentLoc.latitude},${this.state.currentLoc.longitude}&q=${direction}&pretty&size=5`)
+        // fetch(`https://places.sit.ls.hereapi.com/places/v1/autosuggest?app_id=xm8gUL0xdsrDwtVYGJL4&app_code=clYtcwwAK6n0giMRsN3OeQ&at=${this.state.currentLoc.latitude},${this.state.currentLoc.longitude}&q=${direction}&pretty&size=5`)
+        fetch(`https://places.sit.ls.hereapi.com/places/v1/autosuggest?app_id=xm8gUL0xdsrDwtVYGJL4&app_code=clYtcwwAK6n0giMRsN3OeQ&at=${(this.state.selectedInput === 'to') ? this.state.fromLoc : this.state.currentLoc.latitude + ',' + this.state.currentLoc.longitude}&q=${direction}&pretty&size=5`)
         .then((response) => {
             return response.json();
         })
@@ -203,6 +243,8 @@ class Map extends React.Component {
         var behavior = new window.H.mapevents.Behavior(events);
         // eslint-disable-next-line
         var ui = new window.H.ui.UI.createDefault(this.map, layer)
+
+        this.routeGroup = new window.H.map.Group()
 
         // window.H.Map.Options({lat:-15.829251, lng:-56.099042})
         // console.log(window.H.map)
@@ -314,9 +356,13 @@ class Map extends React.Component {
                 <Location dangerouslySetInnerHTML={{
                     __html: suggestion.vicinity
                 }} />
+
+                {(this.state.selectedInput === 'to') ? 
                 <Distance dangerouslySetInnerHTML={{
                     __html: (suggestion.distance) ? `${getMiles(suggestion.distance).toFixed(1)} Miles` : ''
                 }} />
+                : ''}
+                
 
                 </Suggestion>
         })
@@ -326,19 +372,26 @@ class Map extends React.Component {
                 <Side>
 
                     <Input id="from" placeholder="From" onKeyUp={(e) => {
-                        console.log(e.currentTarget.id)
                         this.setState({
                             from:e.currentTarget.value,
-                            selectedInput:e.currentTarget.id
+                            
                         }, () => this.updateSuggested(this.state.from))
-                    } }/>
+                    } } onFocus={(e) => {
+                            this.setState({
+                                selectedInput:e.currentTarget.id
+                            })
+                        }}/>
                     <Input id="to" placeholder="To" onKeyUp={(e) => {
                         this.setState({
                             to:e.currentTarget.value,
                             selectedInput:e.currentTarget.id
                         }, () => this.updateSuggested(this.state.to))
-                    } }/>
-                    <button onClick={this.createRoute}>Go</button>
+                    } } onFocus={(e) => {
+                        this.setState({
+                            selectedInput:e.currentTarget.id
+                        })
+                        }}/>
+                    <Button onClick={this.createRoute}>Go</Button>
                     <div>
                         <Suggestions>
                             {suggestionList}
