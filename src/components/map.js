@@ -208,6 +208,15 @@ class Map extends React.Component {
 
     componentDidMount() {
 
+        //Calling autosuggest API in express
+        fetch('/ping')
+        .then((response) => {
+            return response.json()
+        })
+        .then((data) => {
+            console.log(data)
+        })
+
         let thisComponent = this;
 
         if ("geolocation" in navigator) {
