@@ -13,20 +13,28 @@ app.use(express.static(path.join(__dirname, 'build')));
 
 app.get('/bumps', db.getBumps)
 
-app.get('/ping', function (req, res) {
+// app.get('/ping', function (req, res) {
 
-  fetch('https://places.sit.ls.hereapi.com/places/v1/autosuggest?app_id=xm8gUL0xdsrDwtVYGJL4&app_code=clYtcwwAK6n0giMRsN3OeQ&at=52.5304417,13.4111201&q=cardiff&pretty&size=5')
+//   fetch(`https://places.sit.ls.hereapi.com/places/v1/autosuggest?app_id=xm8gUL0xdsrDwtVYGJL4&app_code=clYtcwwAK6n0giMRsN3OeQ&at=52.5304417,13.4111201&q=${req.query.loc}&pretty&size=5`)
+//   .then((response) => {
+//     return response.json();
+//   })
+//   .then((data) => {
+//     return res.send(data);
+//   })
+
+// });
+
+app.get('/createroute', function (req, res) {
+ 
+  fetch(`https://route.ls.hereapi.com/routing/7.2/calculateroute.json?apiKey=HnSYQXJYOLQAGFkthNCjSYdKzEjwrfxthpOqhcL5gSQ&waypoint0=geo!${req.query.from}&waypoint1=geo!${req.query.to}8&mode=fastest;car;traffic:disabled&routeAttributes=sh`)
   .then((response) => {
-      return response.json();
+    return response.json();
   })
   .then((data) => {
     return res.send(data);
   })
-
-});
-
-app.get('/foo', function (req, res) {
- return res.send("sausages");
+  
 });
 
 app.get('/', function (req, res) {

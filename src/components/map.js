@@ -124,7 +124,7 @@ class Map extends React.Component {
 
     createRoute = () => {   
 
-        fetch(`https://route.ls.hereapi.com/routing/7.2/calculateroute.json?apiKey=${this.state.apikey}&waypoint0=geo!${this.state.fromLoc}&waypoint1=geo!${this.state.toLoc}8&mode=fastest;car;traffic:disabled&routeAttributes=sh`)
+        fetch(`/createroute?from=${this.state.fromLoc}&to=${this.state.toLoc}`)
         .then((response) => {
             return response.json();
         })
@@ -209,7 +209,7 @@ class Map extends React.Component {
     componentDidMount() {
 
         //Calling autosuggest API in express
-        fetch('/ping')
+        fetch('/ping?loc=melbourne')
         .then((response) => {
             return response.json()
         })
