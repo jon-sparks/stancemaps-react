@@ -36,6 +36,17 @@ app.get('/createroute', function (req, res) {
   })
   
 });
+app.get('/updatesuggested', function (req, res) {
+ 
+  fetch(`https://places.sit.ls.hereapi.com/places/v1/autosuggest?app_id=xm8gUL0xdsrDwtVYGJL4&app_code=clYtcwwAK6n0giMRsN3OeQ&at=${req.query.at}&q=${req.query.q}&pretty&size=5`)
+  .then((response) => {
+    return response.json();
+  })
+  .then((data) => {
+    return res.send(data);
+  })
+  
+});
 
 app.get('/', function (req, res) {
   // res.sendFile(path.join(__dirname, 'build', 'index.html'));

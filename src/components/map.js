@@ -193,8 +193,7 @@ class Map extends React.Component {
     }
 
     updateSuggested = (direction) => {
-        // fetch(`https://places.sit.ls.hereapi.com/places/v1/autosuggest?app_id=xm8gUL0xdsrDwtVYGJL4&app_code=clYtcwwAK6n0giMRsN3OeQ&at=${this.state.currentLoc.latitude},${this.state.currentLoc.longitude}&q=${direction}&pretty&size=5`)
-        fetch(`https://places.sit.ls.hereapi.com/places/v1/autosuggest?app_id=xm8gUL0xdsrDwtVYGJL4&app_code=clYtcwwAK6n0giMRsN3OeQ&at=${(this.state.selectedInput === 'to') ? this.state.fromLoc : this.state.currentLoc.latitude + ',' + this.state.currentLoc.longitude}&q=${direction}&pretty&size=5`)
+        fetch(`/updatesuggested?at=${(this.state.selectedInput === 'to') ? this.state.fromLoc : this.state.currentLoc.latitude + ',' + this.state.currentLoc.longitude}&q=${direction}`)
         .then((response) => {
             return response.json();
         })
@@ -207,15 +206,6 @@ class Map extends React.Component {
     }
 
     componentDidMount() {
-
-        //Calling autosuggest API in express
-        fetch('/ping?loc=melbourne')
-        .then((response) => {
-            return response.json()
-        })
-        .then((data) => {
-            console.log(data)
-        })
 
         let thisComponent = this;
 
