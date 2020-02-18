@@ -80,6 +80,10 @@ const Distance = styled.p`
     font-weight: bold;
 `
 
+const LegInput = styled.input`
+    margin: 5px 0;
+`
+
 class Map extends React.Component {
 
     constructor(props) {
@@ -104,7 +108,8 @@ class Map extends React.Component {
             toLoc: '',
             suggested: [],
             selectedInput : '',
-            userInput: ''
+            userInput: '',
+            numLegs: 0
         }
     }
 
@@ -366,6 +371,11 @@ class Map extends React.Component {
                 </Suggestion>
         })
 
+        const legs = []
+        for(let i = 1; i <= this.state.numLegs; i++){
+            legs.push(<LegInput key={i}/>)
+        }
+
         return (
             <>
                 <Side>
@@ -396,6 +406,10 @@ class Map extends React.Component {
                             {suggestionList}
                         </Suggestions>
                     </div>
+                    {legs}
+                    <button onClick={() => this.setState({
+                        numLegs: this.state.numLegs + 1
+                    })}>Add input</button>
                 </Side>
                 <div id="here-map" style={{height: '100vh', background: 'grey', flexGrow: 1}}></div>
             </>
