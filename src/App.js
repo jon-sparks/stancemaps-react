@@ -11,13 +11,14 @@ class App extends React.Component {
 
         }
 
-        // fetch('/bumps')
-        //     .then(response => response.json())
-        //     .then(data => {
-        //         this.setState({
-        //             allBumps: data
-        //         })
-        //     })
+        fetch('/bumps')
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                this.setState({
+                    allBumps: data
+                })
+            })
 
 
     }
