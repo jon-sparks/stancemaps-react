@@ -19,6 +19,14 @@ class App extends React.Component {
                     allBumps: data
                 })
             })
+        fetch('/postbumps')
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                // this.setState({
+                //     allBumps: data
+                // })
+            })
 
 
     }

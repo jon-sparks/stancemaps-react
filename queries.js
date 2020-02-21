@@ -9,15 +9,28 @@ const pool = new Pool({
 })
 
 const getBumps = (request, response) => {
-    pool.query('SELECT * FROM speedbumps ORDER BY id ASC', (error, results) => {
-      if (error) {
-        throw error
-      }
-      console.log('success')
-      response.status(200).json(results.rows)
-    })
-  }
+  pool.query('SELECT * FROM speedbumps ORDER BY id ASC', (error, results) => {
+    if (error) {
+      throw error
+    }
+    console.log('success')
+    response.status(200).json(results.rows)
+  })
+}
+
+
+const postBumps = (request, response) => {
+  // pool.query('SELECT * FROM speedbumps ORDER BY id ASC', (error, results) => {
+  pool.query('INSERT INTO speedbumps(id, lat, lon) VALUES(3, 9, 6) RETURNING *', (error, results) => {
+    if (error) {
+      throw error
+    }
+    console.log(results)
+    // response.status(200).json(results.rows)
+  })
+}
 
 module.exports = {
-    getBumps,
+  getBumps,
+  postBumps,
 }
