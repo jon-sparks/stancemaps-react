@@ -7,7 +7,7 @@ class App extends React.Component {
 
         this.state = {
 
-            allBumps: {}
+            allBumps: []
 
         }
 
@@ -16,17 +16,17 @@ class App extends React.Component {
             .then(data => {
                 console.log(data)
                 this.setState({
-                    allBumps: data
+                    // allBumps: data
                 })
             })
-        fetch('/postbumps')
-            .then(response => response.json())
-            .then(data => {
-                console.log(data)
-                // this.setState({
-                //     allBumps: data
-                // })
-            })
+        // fetch('/postbumps')
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         console.log(data)
+        //         // this.setState({
+        //         //     allBumps: data
+        //         // })
+        //     })
 
 
     }

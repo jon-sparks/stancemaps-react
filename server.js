@@ -12,7 +12,7 @@ app.use(bodyParser.urlencoded({
 app.use(express.static(path.join(__dirname, 'build')));
 
 app.get('/bumps', db.getBumps)
-app.get('/postbumps', db.postBumps)
+// app.get('/postbumps', db.postBumps)
 
 // app.get('/ping', function (req, res) {
 
