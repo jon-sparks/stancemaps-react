@@ -16,7 +16,7 @@ class App extends React.Component {
             .then(data => {
                 console.log(data)
                 this.setState({
-                    // allBumps: data
+                    allBumps: data
                 })
             })
         // fetch('/postbumps')

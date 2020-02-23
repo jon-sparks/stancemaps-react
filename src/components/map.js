@@ -299,19 +299,19 @@ class Map extends React.Component {
     }
 
     //update allBumps state when props are updated.
-    static getDerivedStateFromProps(nextProps, prevState){
-        return({allBumps: nextProps.allBumps})
-    }
+    // static getDerivedStateFromProps(nextProps, prevState){
+    //     return({allBumps: nextProps.allBumps})
+    // }
 
     componentDidUpdate(){
 
         // Define the icon image for speed bumps
-        // let bumpIcon = new window.H.map.Icon("../bumpicon.png", {anchor: {x:15,y:15}});
-        // console.log(bumpIcon)
+        let bumpIcon = new window.H.map.Icon(require('../bumpicon.png'), {anchor: {x:15,y:15}});
+        console.log(bumpIcon)
 
-        if(this.state.allBumps.length > 0){
-            Object.values(this.state.allBumps).forEach(value => {
-                let bumpMarker = new window.H.map.Marker({lat:value.lat, lng:value.lon});
+        if(this.props.allBumps.length > 0){
+            Object.values(this.props.allBumps).forEach(value => {
+                let bumpMarker = new window.H.map.Marker({lat:value.st_y, lng:value.st_x}, {icon: bumpIcon});
                 this.map.addObject(bumpMarker);
             });
         }
